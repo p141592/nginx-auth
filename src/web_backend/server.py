@@ -34,20 +34,9 @@ routes = web.RouteTableDef()
 
 @routes.get('/ping')
 async def ping(request):
-    return web.Response(text="auth_center")
+    return web.Response(text="web_backend")
 
-@routes.get('/ping_redis')
-async def ping(request):
-    return web.Response(text="auth_center")
-    # Create Redis connection
-    connection = yield from asyncio_redis.Connection.create(host='127.0.0.1', port=6379)
 
-    # Set a key
-    yield from connection.set('my_key', 'my_value')
-
-    # When finished, close the connection.
-    connection.close()
-    
 app = web.Application()
 app.add_routes(routes)
 web.run_app(app)

@@ -4,11 +4,43 @@ services:
   nginx:
     build: .
     ports:
-      - 8000:80
+      - 80:80
     environment:
       - REDIS=redis
+      - AUTH_CENTER=http://auth_center:8001
+      - WEB_BACKEND=http://web_backend:8002
+
+    links:
+      - auth_center
+      - redis
+      - web_backend
+
     depends_on:
       - redis
+      - web_backend
+      - auth_center
 
   redis:
     image: redis
+    ports:
+      - 6379:6379
+
+  auth_center:
+    build:
+      context: .
+      dockerfile: docker/aiohttp-start.Dockerfile
+
+    command: python auth_center/server.py
+
+    ports:
+      - 8001:8080
+
+  web_backend:
+    build:
+      context: .
+      dockerfile: docker/aiohttp-start.Dockerfile
+
+    ports:
+      - 8002:8080
+
+    command: python web_backend/server.py

@@ -1,0 +1,14 @@
+server {
+    listen 80;
+    include /etc/nginx/conf.d/ping-test.nginx;
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass $WEB_BACKEND;
+    }
+    location /auth {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass $AUTH_CENTER;
+    }
+}

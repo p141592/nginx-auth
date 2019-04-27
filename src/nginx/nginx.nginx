@@ -21,17 +21,17 @@ worker_processes  1;
 events {
     worker_connections  1024;
 }
-
-include /etc/nginx/global.conf;
+env RESOLVER;
+env REDIS;
+env AUTH_CENTER;
+env WEB_BACKEND;
 
 http {
-    resolver 127.0.0.11 ipv6=off;
-    include /etc/nginx/http.conf;
     include       mime.types;
     default_type  application/octet-stream;
-
-    sendfile        on;    
+    resolver 127.0.0.11 ipv6=off;
+    sendfile        off;    
     keepalive_timeout  65;
 
-    include /etc/nginx/conf.d/nginx-auth.conf;
+    include /etc/nginx/conf.d/nginx-auth.nginx;
 }
