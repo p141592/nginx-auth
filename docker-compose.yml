@@ -4,7 +4,7 @@ services:
   nginx:
     build: .
     ports:
-      - 80:80
+      - 443:443
     environment:
       - REDIS=redis
       - AUTH_CENTER=http://auth_center

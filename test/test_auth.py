@@ -13,11 +13,11 @@ from .values import *
 
 def test_auth_request():
     # Отправка запроса на не авторизованный URL
-    r = requests.get(f'{NGINX}/auth-request', headers={"Authentication": "Anonymous"})
+    r = requests.get(f'{NGINX}/auth-request', headers={"Authentication": "Anonymous"}, verify=False)
     assert r.status_code == 403
 
     # Отправка запроса на авторизованный
-    r = requests.get(f'{NGINX}/auth-request', headers={"Authentication": "Some"})
+    r = requests.get(f'{NGINX}/auth-request', headers={"Authentication": "Some"}, verify=False)
     assert r.status_code == 200
 
 
@@ -25,12 +25,12 @@ def test_get_payload():
     # Отправка запроса на получение JWT
     r = requests.post(
         f'{NGINX}/auth/authentication',
-        json={"auth-type": "password", "data": {"username": "username", "password": "bad"}}
+        json={"auth-type": "password", "data": {"username": "username", "password": "bad"}}, verify=False
     )
     assert r.status_code == 403
 
     r = requests.post(
         f'{NGINX}/auth/authentication',
-        json={"auth-type": "password", "data": {"username": "username", "password": "good"}}
+        json={"auth-type": "password", "data": {"username": "username", "password": "good"}}, verify=False
     )
     assert r.status_code == 200

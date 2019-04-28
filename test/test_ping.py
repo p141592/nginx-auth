@@ -28,7 +28,7 @@ def test_redis_connect():
 
 def test_nginx_connect():
     """Проверка коннекта до nginx"""
-    r = requests.get(f'{NGINX}/ping')
+    r = requests.get(f'{NGINX}/ping', verify=False)
     assert r.status_code == 200
     assert r.text.strip() == 'pong'
 
