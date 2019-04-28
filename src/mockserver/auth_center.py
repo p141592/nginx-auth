@@ -45,6 +45,14 @@ async def authentication(request):
     return web.json_response(data=get_payload(_user), status=200)
 
 
+@routes.get('/check-user')
+async def check_user(request):
+    # Берем Authentication заголовок
+    # Разбираем его
+    #
+    return web.json_response()
+
+
 @routes.get('/')
 async def index(request):
     return web.Response(text="auth_center")

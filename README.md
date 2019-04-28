@@ -80,7 +80,13 @@ REDIS Lists raw exired:
 
 - login
 
-    Генерирует JWT/refresh token, кладет его в whitelist
+    Генерирует JWT/refresh token, кладет его в whitelist 
+
+## Инструкция генерации SSL ключа
+
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-auth.key -out /etc/ssl/certs/nginx-auth.crt
+
+    openssl dhparam -out /etc/ssl/certs/nginx-auth.pem 2048
 
 ## Проблемы
 1.  JWT протух, пока шел от nginx до сервиса

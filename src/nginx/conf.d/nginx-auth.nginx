@@ -1,24 +1,37 @@
 server {
 
-    listen 80;
+    listen 443 ssl http2 default_server;
+    listen [::]:443 ssl http2 default_server;
+    include ssl.nginx;
     include /etc/nginx/conf.d/ping-test.nginx;
 
     location /check-jwt {
-        default_type text/html;
+        default_type application/json;
+        # Проверяем blacklist
+        # Проверяем whitelist
+        # Разбираем JWT, проверяем iss, проверяем время жизни
+        # Отправляем на auth_center, проверяем пользователя
+        # Выдаем ответ
         content_by_lua_block {
             ngx.say("pong");
         }
     }
 
     location /refresh-token {
-        default_type text/html;
+        default_type application/json;
+        # Взять в массиве refresh_toker
+        # Посмотреть - с каким JWT он ассоциирован
+        # Сравнить их
+        # Проверить JWT в blacklist
+        # Выдать новый JWT
+        # Добавить старый в blacklist
         content_by_lua_block {
             ngx.say("pong");
         }
     }
 
     location /login {
-        default_type text/html;
+        default_type application/json;
         # Получение данных пользователя для авторизации
         # Отправка запроса в /authentication
         # Получение payload
@@ -31,7 +44,9 @@ server {
     }
 
     location /logout {
-        default_type text/html;
+        default_type application/json;
+        # Добавляем JWT в blacklist
+        # Возвращаем результат
         content_by_lua_block {
             ngx.say("pong");
         }
@@ -44,6 +59,15 @@ server {
         rewrite /auth/(.*) /$1  break;
         proxy_redirect     off;
         proxy_pass $AUTH_CENTER;
+    }
+
+    location key {
+        # Выдача публичного ключа для расшифровки JWT на стороне сервисов
+        content_by_lua_block{
+            local f = assert(io.open(filename, "r"))
+            local t = f:read("*all")
+            f:close()
+    }
     }
 
     location / {
