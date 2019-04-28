@@ -1,27 +1,27 @@
 location /ping {
     default_type text/html;
     content_by_lua_block {
-        required("nginx-auth").new()
+        ngx.say("pong");
     }
 }
 
 location /ping/redis {
     default_type text/html;
     content_by_lua_block {
-        ngx.say("pong")
+        ngx.say(require("ping-test").ping_redis())
     }
 }
 
 location /ping/auth-center{
     default_type text/html;
     content_by_lua_block {
-        ngx.say("pong")
+        ngx.say(require("ping-test").ping_auth_center())
     }
 }
 
-location /ping/auth-backend{
+location /ping/web-backend{
     default_type text/html;
     content_by_lua_block {
-        ngx.say("pong")
+        ngx.say(require("ping-test").ping_web_backend())
     }
 }

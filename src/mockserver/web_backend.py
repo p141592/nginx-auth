@@ -2,6 +2,7 @@ from aiohttp import web
 
 routes = web.RouteTableDef()
 
+
 # Auth Center
 # Имеет подключение к REDIS
 #
@@ -34,20 +35,20 @@ routes = web.RouteTableDef()
 
 @routes.get('/ping')
 async def ping(request):
-    return web.Response(text="auth_center")
+    return web.Response(text="web_backend")
 
-@routes.get('/ping_redis')
-async def ping(request):
-    return web.Response(text="auth_center")
-    # Create Redis connection
-    connection = yield from asyncio_redis.Connection.create(host='127.0.0.1', port=6379)
 
-    # Set a key
-    yield from connection.set('my_key', 'my_value')
+@routes.get('/get_data')
+async def get_data(request):
+    return web.Response(text="web_backend")
 
-    # When finished, close the connection.
-    connection.close()
-    
+
+@routes.get('/auth_request')
+async def auth_request(request):
+    _auth = request.headers.get('Authentication')
+    return web.Response(text=_auth, status=200 if _auth != 'Anonymous' else 403)
+
+
 app = web.Application()
 app.add_routes(routes)
-web.run_app(app)
+web.run_app(app, port=80)

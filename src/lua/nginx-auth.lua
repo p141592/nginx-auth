@@ -10,14 +10,14 @@ function lib.new(_)
     local _h = require "resty.http"
 
     local http = _h.new()
-
     local redis = _r:new()
-    local ok, err = red:connect("127.0.0.1", 6379)
-    if not ok then
-        return nil, "Redis connect fail"
-    end
 
     return setmetatable({ redis = redis, http = http}, mt)
+end
+
+function lib.redis_connect(self)
+    local redis = self.redis
+    return redis:connect(os.getenv("REDIS"), 6379)
 end
 
 function lib.close(self)
