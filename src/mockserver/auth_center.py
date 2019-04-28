@@ -34,6 +34,10 @@ routes = web.RouteTableDef()
 #
 # Генерирует JWT/refresh token, кладет его в whitelist
 
+USERS = dict(
+    test="good"
+)
+
 
 @routes.get('/ping')
 async def ping(request):
@@ -74,7 +78,14 @@ async def login(request):
 @routes.get('/logout')
 async def logout(request):
     # Положить JWT в blacklist
+    data = await request.json()
+    print(data)
     return web.Response(text="logout")
+
+
+@routes.get('/')
+async def index(request):
+    return web.Response(text="auth_center")
 
 app = web.Application()
 app.add_routes(routes)

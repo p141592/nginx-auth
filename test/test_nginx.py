@@ -39,12 +39,10 @@ def test_auth_center_proxy_pass():
 
 
 def test_web_backend_proxy_pass():
-    r = requests.get(f'{NGINX}/get_data')
+    r = requests.get(f'{NGINX}/')
     assert r.status_code == 200
     assert r.text.strip() == 'web_backend'
 
-    r = requests.get(f'{NGINX}/auth_request', headers={"Authentication": "Anonymous"})
-    assert r.status_code == 403
-
-    r = requests.get(f'{NGINX}/auth_request', headers={"Authentication": "Some"})
+    r = requests.get(f'{NGINX}/get_data')
     assert r.status_code == 200
+    assert r.text.strip() == 'get_data'

@@ -40,7 +40,7 @@ async def ping(request):
 
 @routes.get('/get_data')
 async def get_data(request):
-    return web.Response(text="web_backend")
+    return web.Response(text="get_data")
 
 
 @routes.get('/auth_request')
@@ -48,6 +48,10 @@ async def auth_request(request):
     _auth = request.headers.get('Authentication')
     return web.Response(status=200 if _auth != 'Anonymous' else 403, text=_auth)
 
+
+@routes.get('/')
+async def index(request):
+    return web.Response(text="web_backend")
 
 app = web.Application()
 app.add_routes(routes)

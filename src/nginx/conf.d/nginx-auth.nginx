@@ -6,16 +6,18 @@ server {
     location ~ ^/auth/ {
         set_by_lua $AUTH_CENTER 'return os.getenv("AUTH_CENTER")';
 
+        include proxy_params;
         rewrite /auth/(.*) /$1  break;
-        #proxy_pass         http://localhost:3200;
         proxy_redirect     off;
-        proxy_set_header   Host $host;
-        #include proxy_params;
         proxy_pass $AUTH_CENTER;
     }
 
     location / {
         set_by_lua $WEB_BACKEND 'return os.getenv("WEB_BACKEND")';
+        content_by_lua_block {
+            ngx.say(require("nginx-auth").check_auth())
+        }
+
         default_type application/json;
         include proxy_params;
         proxy_pass $WEB_BACKEND;
