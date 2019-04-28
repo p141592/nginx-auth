@@ -34,5 +34,5 @@ def test_nginx_connect():
 
 
 def test_auth_center_redis():
-    r = requests.get(f'{AUTH_CENTER}/ping_redis')
+    r = requests.get(f'{AUTH_CENTER}/ping-redis')
     assert r.status_code == 200

@@ -22,19 +22,19 @@ def test_nginx_redis():
 
 
 def test_auth_center_proxy_pass():
-    r = requests.get(f'{NGINX}/auth/ping_redis')
+    r = requests.get(f'{NGINX}/auth/ping-redis')
     assert r.status_code == 200
 
-    r = requests.get(f'{NGINX}/auth/check_jwt')
+    r = requests.get(f'{NGINX}/check-jwt')
     assert r.status_code != 404
 
-    r = requests.get(f'{NGINX}/auth/refresh_token')
+    r = requests.get(f'{NGINX}/refresh-token')
     assert r.status_code != 404
 
-    r = requests.get(f'{NGINX}/auth/login')
+    r = requests.get(f'{NGINX}/login')
     assert r.status_code != 404
 
-    r = requests.get(f'{NGINX}/auth/logout')
+    r = requests.get(f'{NGINX}/logout')
     assert r.status_code != 404
 
 
@@ -43,6 +43,5 @@ def test_web_backend_proxy_pass():
     assert r.status_code == 200
     assert r.text.strip() == 'web_backend'
 
-    r = requests.get(f'{NGINX}/get_data')
+    r = requests.get(f'{NGINX}/get-data')
     assert r.status_code == 200
-    assert r.text.strip() == 'get_data'

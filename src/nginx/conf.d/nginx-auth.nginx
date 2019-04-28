@@ -3,6 +3,40 @@ server {
     listen 80;
     include /etc/nginx/conf.d/ping-test.nginx;
 
+    location /check-jwt {
+        default_type text/html;
+        content_by_lua_block {
+            ngx.say("pong");
+        }
+    }
+
+    location /refresh-token {
+        default_type text/html;
+        content_by_lua_block {
+            ngx.say("pong");
+        }
+    }
+
+    location /login {
+        default_type text/html;
+        # Получение данных пользователя для авторизации
+        # Отправка запроса в /authentication
+        # Получение payload
+        # Создание JWT
+        # Положить JWT в whitelist
+        # Вернуть JWT и refresh_token
+        content_by_lua_block {
+            ngx.say("pong");
+        }
+    }
+
+    location /logout {
+        default_type text/html;
+        content_by_lua_block {
+            ngx.say("pong");
+        }
+    }
+
     location ~ ^/auth/ {
         set_by_lua $AUTH_CENTER 'return os.getenv("AUTH_CENTER")';
 
