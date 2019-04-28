@@ -22,14 +22,6 @@ def test_nginx_redis():
 
 
 def test_auth_center_proxy_pass():
-    r = requests.get(f'{NGINX}/auth/')
-    assert r.status_code == 200
-    assert r.text.strip() == 'auth_center index'
-
-    r = requests.get(f'{NGINX}')
-    assert r.status_code == 200
-    assert r.text.strip() == 'web_backend index'
-
     r = requests.get(f'{NGINX}/auth/ping_redis')
     assert r.status_code == 200
 

@@ -46,7 +46,7 @@ async def get_data(request):
 @routes.get('/auth_request')
 async def auth_request(request):
     _auth = request.headers.get('Authentication')
-    return web.Response(text=_auth, status=200 if _auth != 'Anonymous' else 403)
+    return web.Response(status=200 if _auth != 'Anonymous' else 403, text=_auth)
 
 
 app = web.Application()
