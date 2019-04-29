@@ -61,13 +61,11 @@ server {
         proxy_pass $AUTH_CENTER;
     }
 
-    location key {
+    location /key {
         # Выдача публичного ключа для расшифровки JWT на стороне сервисов
+        default_type text/plan;
         content_by_lua_block{
-            local f = assert(io.open(filename, "r"))
-            local t = f:read("*all")
-            f:close()
-            ngx.say(t)
+            ngx.say(os.getenv("JWT_KEY"));
         }
     }
 

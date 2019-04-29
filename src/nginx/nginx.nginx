@@ -25,6 +25,7 @@ events {
 env AUTH_CENTER;
 env WEB_BACKEND;
 env REDIS;
+env JWT_KEY;
 
 http {
     include       mime.types;
