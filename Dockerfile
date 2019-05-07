@@ -1,8 +1,82 @@
-FROM openresty/openresty
+FROM alpine:3.9.3
+ENV RESTY_OPENSSL_VERSION=1.1.0j
+ENV RESTY_PCRE_VERSION=8.42
+ENV RESTY_VERSION=1.13.6.2
+
+ARG RESTY_CONFIG_OPTIONS="\
+    --with-openssl=/tmp/openssl-${RESTY_OPENSSL_VERSION} \
+    --with-pcre=/tmp/pcre-${RESTY_PCRE_VERSION} \
+    --with-file-aio \
+    --with-http_addition_module \
+    --with-http_auth_request_module \
+    --with-http_dav_module \
+    --with-http_flv_module \
+    --with-http_geoip_module=dynamic \
+    --with-http_gunzip_module \
+    --with-http_gzip_static_module \
+    --with-http_image_filter_module=dynamic \
+    --with-http_mp4_module \
+    --with-http_random_index_module \
+    --with-http_realip_module \
+    --with-http_secure_link_module \
+    --with-http_slice_module \
+    --with-http_ssl_module \
+    --with-http_stub_status_module \
+    --with-http_sub_module \
+    --with-http_v2_module \
+    --with-http_xslt_module=dynamic \
+    --with-ipv6 \
+    --with-mail \
+    --with-mail_ssl_module \
+    --with-md5-asm \
+    --with-pcre-jit \
+    --with-sha1-asm \
+    --with-stream \
+    --with-stream_ssl_module \
+    --with-threads \
+    "
+
+RUN apk add --no-cache --virtual .build-deps \
+        build-base \
+        curl \
+        gd-dev \
+        geoip-dev \
+        libxslt-dev \
+        linux-headers \
+        make \
+        perl-dev \
+        readline-dev \
+        zlib-dev
+
+RUN apk add --no-cache \
+        gd \
+        geoip \
+        libgcc \
+        libxslt \
+        zlib
+
+COPY vendor/* /tmp/
+
+RUN cd /tmp \
+    && curl -fSL https://www.openssl.org/source/openssl-${RESTY_OPENSSL_VERSION}.tar.gz -o openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
+    && tar xzf openssl-${RESTY_OPENSSL_VERSION}.tar.gz \
+
+    && curl -fSL https://ftp.pcre.org/pub/pcre/pcre-${RESTY_PCRE_VERSION}.tar.gz -o pcre-${RESTY_PCRE_VERSION}.tar.gz \
+    && tar xzf pcre-${RESTY_PCRE_VERSION}.tar.gz \
+
+    && curl -fSL https://openresty.org/download/openresty-${RESTY_VERSION}.tar.gz -o openresty-${RESTY_VERSION}.tar.gz \
+    && tar xzf openresty-${RESTY_VERSION}.tar.gz \
+    && cd /tmp/openresty-${RESTY_VERSION} \
+    && ./configure -j1 ${RESTY_CONFIG_OPTIONS} \
+    && make -j1 \
+    && make -j1 install \
+    && rm -rf /tmp/* \
+    && apk del .build-deps
+
+
+ENV PATH=$PATH:/usr/local/openresty/luajit/bin:/usr/local/openresty/nginx/sbin:/usr/local/openresty/bin
 
 ENV openresty /usr/local/openresty
-ENV JWT_KEY -----BEGIN CERTIFICATE-----MIIDpjCCAo4CCQC1AeRCsIyFljANBgkqhkiG9w0BAQsFADCBlDELMAkGA1UEBhMCUlUxDzANBgNVBAgMBk1vc2NvdzELMAkGA1UEBwwCUlUxHDAaBgNVBAoME0JhcnlzaG5pa292IE5pa29sYXkxEzARBgNVBAsMCm5naW54LWF1dGgxEzARBgNVBAMMCm5naW54LWF1dGgxHzAdBgkqhkiG9w0BCQEWEGFkbWluQG5naW54LWF1dGgwHhcNMTkwNDI4MjAzNTIxWhcNMjAwNDI3MjAzNTIxWjCBlDELMAkGA1UEBhMCUlUxDzANBgNVBAgMBk1vc2NvdzELMAkGA1UEBwwCUlUxHDAaBgNVBAoME0JhcnlzaG5pa292IE5pa29sYXkxEzARBgNVBAsMCm5naW54LWF1dGgxEzARBgNVBAMMCm5naW54LWF1dGgxHzAdBgkqhkiG9w0BCQEWEGFkbWluQG5naW54LWF1dGgwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDtIWKIuU/t00MIa+joGZLn6RuI1SCMjNn3kB8SFFsbPnWyqHdy0nNbHCTMlq/+Vzra1k3nE9/MLlRqEwypq1oUNrh/ISD24Djfgrmzlmf6/CL4gpTghWjMPhySxfn+V4FDU5SCG6ci+ZqnByPYSgF9Yl2V6124a2tvsy0DeA03pDYkzhc+86+wvQeJ+KweOctE7EARGLjy85yFZCOg2A8hocwSQxur7QZBHxUv8RwWXZ6FffXX/uTOlOnbU/VRRjwE4o1E2j7qrXHHVnyqMbCcETmIdk+yPfoEOx7DbSRjXTdnVwWmEPC1aqd7CYfgbvNA5GjbQU8rG3UgfGefLW4XAgMBAAEwDQYJKoZIhvcNAQELBQADggEBANzlJERPSfV24nf1I4jjnMGimm/hC/JDw2vG7F3CQo/nZ2jKQlNvRZMb8J8SvWgi9USqipX29jkPmyyMLrOv0vgIcVB57ZTeYlMNUM8EdxnQLt8FE87gqlAuTSwNm0z/b5oxGDnajA/RwTkUQTgSWgbVhY+VNunzZizkvo3qwo0ipGI0MntIfmydDRwL2ydo4nZlSpzymOMHL0qVJgrsP9q+rOdZuK/6KpYIK/o2QGUpgYjiZPk24QMAIw3gliYiXbqHnHdcq+Hsv41w1aphJBWxjMckw70NWN7wENi2wzzpzHbCJyyalM78OrGaj7Ku6QS/O9tk39PNk6iKjY1t7LA=-----END CERTIFICATE-----
-
 
 COPY ssl/nginx-auth.key /etc/ssl/private/nginx-auth.key
 COPY ssl/nginx-auth.crt /etc/ssl/certs/nginx-auth.crt
@@ -18,3 +92,5 @@ COPY src/vendor/ ${openresty}/lualib/
 COPY src/lua ${openresty}/lualib/
 
 EXPOSE 443
+CMD ["/usr/local/openresty/bin/openresty", "-g", "daemon off;"]
+STOPSIGNAL SIGQUIT

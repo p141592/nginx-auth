@@ -5,7 +5,7 @@ server {
     include ssl.nginx;
     include /etc/nginx/conf.d/ping-test.nginx;
 
-    location /check-jwt {
+    location /auth/validate {
         default_type application/json;
         # Проверяем blacklist
         # Проверяем whitelist
@@ -17,7 +17,7 @@ server {
         }
     }
 
-    location /refresh-token {
+    location /auth/refresh-token {
         default_type application/json;
         # Взять в массиве refresh_toker
         # Посмотреть - с каким JWT он ассоциирован
@@ -30,7 +30,7 @@ server {
         }
     }
 
-    location /login {
+    location /auth/login {
         default_type application/json;
         # Получение данных пользователя для авторизации
         # Отправка запроса в /authentication
@@ -43,7 +43,7 @@ server {
         }
     }
 
-    location /logout {
+    location /auth/logout {
         default_type application/json;
         # Добавляем JWT в blacklist
         # Возвращаем результат
@@ -59,14 +59,6 @@ server {
         rewrite /auth/(.*) /$1  break;
         proxy_redirect     off;
         proxy_pass $AUTH_CENTER;
-    }
-
-    location /key {
-        # Выдача публичного ключа для расшифровки JWT на стороне сервисов
-        default_type text/plan;
-        content_by_lua_block{
-            ngx.say(os.getenv("JWT_KEY"));
-        }
     }
 
     location / {
